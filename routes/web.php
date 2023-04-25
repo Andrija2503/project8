@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+
+    Debugbar::info("Sve je OK");
+    
     return view('welcome');
 });
 
-Route::get('/phones', [PhoneController::class, 'index']);
+Route::resource('/phones', PhoneController::class);

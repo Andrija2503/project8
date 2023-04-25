@@ -14,6 +14,8 @@ class PhoneController extends Controller
     {
          //$new_phone = DB::insert("insert into phones (name, brand, price) values ('Note 11', 'Samsung', '88000'), ('Mi', 'T8', 55000)");
          $all_phones = DB::select('SELECT * FROM phones');
+
+         \Debugbar::info($all_phones);
                  
          return view('phones.index', ['all_phones'=>$all_phones]);
     }
@@ -23,7 +25,7 @@ class PhoneController extends Controller
      */
     public function create()
     {
-        //
+        return view('phones.create');
     }
 
     /**
@@ -31,7 +33,15 @@ class PhoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "name"=>"required",
+            "brand"=>"required",
+            "price"=>"required"
+        ]);
+
+        DB::insert("insert into phones (name, brand, price) values ('$request->name','$request->brand','$request->price')");
+
+        return redirect('/phones');
     }
 
     /**
@@ -45,9 +55,12 @@ class PhoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $phone = DB::select("select * from phones where id = :id", ["id"=>$id])[0];
+
+        \Debugbar::info($phone);
+        return view('phones.edit', ['phone'=>$phone]);
     }
 
     /**
@@ -55,7 +68,16 @@ class PhoneController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            "name"=>"required",
+            "brand"=>"required",
+            "price"=>"required"
+        ]);
+
+        DB::update("update phones set name= :name, brand= :brand, price= :price where id= :id",
+        ["name"=>$request->name, "brand"=>$request->brand, "price"=>$request->price, "id"=>$id]);
+
+        return redirect("phones");
     }
 
     /**
@@ -63,6 +85,8 @@ class PhoneController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        DB::delete("delete from phones where id = ?",[$id]);
+
+        return redirect('/phones');
     }
 }
